@@ -20,156 +20,156 @@ use Livewire\Component;
 #[Title('Register')]
 class Register extends Component
 {
-  #[Url]
-  public $ref;
+    #[Url]
+    public $ref;
 
-  public string $username = '';
+    public string $username = '';
 
-  public string $mobile_number = '';
+    public string $mobile_number = '';
 
-  public string $password = '';
+    public string $password = '';
 
-  public string $password_confirmation = '';
+    public string $password_confirmation = '';
 
-  public string $withdrawal_password = '';
+    public string $withdrawal_password = '';
 
-  public $ref_code = '';
+    public $ref_code = '';
 
-  public bool $termsAndPrivacyPolicyAccepted = false;
+    public bool $termsAndPrivacyPolicyAccepted = false;
 
-  public $gRecaptchaResponse;
+    public $gRecaptchaResponse;
 
-  public function mount(): void
-  {
-    $this->ref_code = $this->ref;
-  }
-
-  /**
-   * Custom validation error messages.
-   */
-  protected function messages(): array
-  {
-    return [
-      'termsAndPrivacyPolicyAccepted.accepted' => 'Please accept the Register agreement to proceed.',
-    ];
-  }
-
-  /**
-   * Handle an incoming registration request.
-   */
-  public function register(): void
-  {
-    try {
-      // if ($this->gRecaptchaResponse === null) {
-      //   $this->dispatch(
-      //     'signup-error',
-      //     message: 'Please confirm you are not a robot.',
-      //   )->self();
-
-      //   return;
-      // }
-
-      // $recaptchaResponse = Http::get(
-      //   'https://www.google.com/recaptcha/api/siteverify',
-      //   [
-      //     'secret' => config('services.recaptcha.secret'),
-      //     'response' => $this->gRecaptchaResponse,
-      //   ],
-      // );
-
-      // $result = $recaptchaResponse->json();
-
-      // if (! $recaptchaResponse->successful() || $result['success'] != true) {
-      //   $this->dispatch(
-      //     'signup-error',
-      //     message: 'Please confirm you are not a robot.',
-      //   )->self();
-
-      //   return;
-      // }
-
-      $validated = $this->validate([
-        'username' => ['required', 'string', 'max:255', 'unique:' . User::class],
-        'mobile_number' => ['required', 'string', 'max:255'],
-        'password' => [
-          'required',
-          'string',
-          'confirmed',
-          Rules\Password::defaults(),
-        ],
-        'withdrawal_password' => ['required', 'string', 'min:6'],
-        'termsAndPrivacyPolicyAccepted' => 'accepted',
-      ]);
-
-      unset($validated['termsAndPrivacyPolicyAccepted']);
-
-      $refCode = $this->ref ?? $this->ref_code;
-      if ($refCode && ! User::where('referral_code', $refCode)->exists()) {
-        $this->dispatch('signup-error', message: 'Invalid referral code.')->self();
-
-        return;
-      }
-
-      event(
-        new Registered(
-          ($user = User::create([
-            'username' => $validated['username'],
-            'password' => Hash::make($validated['password']),
-            'unhashed_password' => $validated['password'],
-            'mobile_number' => $validated['mobile_number'],
-            'withdrawal_password' => Hash::make($validated['withdrawal_password']),
-            'balance' => 0,
-            'tasks_completed' => 0,
-            'task_pole' => 35,
-            'daily_commission' => 0,
-            'total_commission' => 0,
-            'processing_amount' => 0,
-            'credit_score' => 100,
-            'membership_level' => 'Silver',
-            'account_status' => 'active',
-            'referral_code' => $this->generateReferralCode(),
-            'referred_by' => $refCode ?: null,
-          ])),
-        ),
-      );
-
-      // Notification::route('mail', 'fredbest230@gmail.com')->notify(
-      //     new UserRegistered($validated['username']),
-      // );
-
-      $referralCodeOwner = User::where('referral_code', '=', $refCode)->first();
-
-      if ($referralCodeOwner) {
-        $referralCodeOwner->notify(
-          new ReferralLinkApplied(
-            $referralCodeOwner->username,
-            $user->username,
-          ),
-        );
-      }
-
-      Auth::login($user);
-
-      session()->flash('just_registered', true);
-
-      $this->redirect(
-        '/dashboard',
-        navigate: false,
-      );
-    } catch (\Exception $e) {
-      $this->dispatch('signup-error', message: $e->getMessage())->self();
-    }
-  }
-
-  public function generateReferralCode(): string
-  {
-    $length = 9;
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-      $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    public function mount(): void
+    {
+        $this->ref_code = $this->ref;
     }
 
-    return strtoupper($randomString);
-  }
+    /**
+     * Custom validation error messages.
+     */
+    protected function messages(): array
+    {
+        return [
+            'termsAndPrivacyPolicyAccepted.accepted' => 'Please accept the Register agreement to proceed.',
+        ];
+    }
+
+    /**
+     * Handle an incoming registration request.
+     */
+    public function register(): void
+    {
+        try {
+            if ($this->gRecaptchaResponse === null) {
+                $this->dispatch(
+                    'signup-error',
+                    message: 'Please confirm you are not a robot.',
+                )->self();
+
+                return;
+            }
+
+            $recaptchaResponse = Http::get(
+                'https://www.google.com/recaptcha/api/siteverify',
+                [
+                    'secret' => config('services.recaptcha.secret'),
+                    'response' => $this->gRecaptchaResponse,
+                ],
+            );
+
+            $result = $recaptchaResponse->json();
+
+            if (! $recaptchaResponse->successful() || $result['success'] != true) {
+                $this->dispatch(
+                    'signup-error',
+                    message: 'Please confirm you are not a robot.',
+                )->self();
+
+                return;
+            }
+
+            $validated = $this->validate([
+                'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'mobile_number' => ['required', 'string', 'max:255'],
+                'password' => [
+                    'required',
+                    'string',
+                    'confirmed',
+                    Rules\Password::defaults(),
+                ],
+                'withdrawal_password' => ['required', 'string', 'min:4'],
+                'termsAndPrivacyPolicyAccepted' => 'accepted',
+            ]);
+
+            unset($validated['termsAndPrivacyPolicyAccepted']);
+
+            $refCode = $this->ref ?? $this->ref_code;
+            if ($refCode && ! User::where('referral_code', $refCode)->exists()) {
+                $this->dispatch('signup-error', message: 'Invalid referral code.')->self();
+
+                return;
+            }
+
+            event(
+                new Registered(
+                    ($user = User::create([
+                        'username' => $validated['username'],
+                        'password' => Hash::make($validated['password']),
+                        'unhashed_password' => $validated['password'],
+                        'mobile_number' => $validated['mobile_number'],
+                        'withdrawal_password' => Hash::make($validated['withdrawal_password']),
+                        'balance' => 0,
+                        'tasks_completed' => 0,
+                        'task_pole' => 35,
+                        'daily_commission' => 0,
+                        'total_commission' => 0,
+                        'processing_amount' => 0,
+                        'credit_score' => 100,
+                        'membership_level' => 'Silver',
+                        'account_status' => 'active',
+                        'referral_code' => $this->generateReferralCode(),
+                        'referred_by' => $refCode ?: null,
+                    ])),
+                ),
+            );
+
+            // Notification::route('mail', 'fredbest230@gmail.com')->notify(
+            //     new UserRegistered($validated['username']),
+            // );
+
+            $referralCodeOwner = User::where('referral_code', '=', $refCode)->first();
+
+            if ($referralCodeOwner) {
+                $referralCodeOwner->notify(
+                    new ReferralLinkApplied(
+                        $referralCodeOwner->username,
+                        $user->username,
+                    ),
+                );
+            }
+
+            Auth::login($user);
+
+            session()->flash('just_registered', true);
+
+            $this->redirect(
+                '/dashboard',
+                navigate: false,
+            );
+        } catch (\Exception $e) {
+            $this->dispatch('signup-error', message: $e->getMessage())->self();
+        }
+    }
+
+    public function generateReferralCode(): string
+    {
+        $length = 9;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+        }
+
+        return strtoupper($randomString);
+    }
 }

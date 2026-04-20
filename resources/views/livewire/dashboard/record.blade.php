@@ -8,7 +8,7 @@
                 @forelse ($completedTasks as $task)
                     <div wire:key="task-{{ $task->id }}" class="item">
                         <div class="detail">
-                            <img src="{{ Storage::url($task->task_image_path) }}" alt="img" class="image-block imaged w64">
+                            <img src="{{ route('storage.file', $task->task_image_path) }}" alt="img" class="image-block imaged w64">
                             <div>
                                 <strong>{{ $task->title }}</strong>
                                 <p>Amount: {{ number_format((float) $task->cost, 2) }} USDT</p>

@@ -5,7 +5,7 @@
         <div class="section mt-3 text-center">
             <div class="avatar-section">
                 <a href="#">
-                    <img src="{{ asset('assets/img/sample/avatar/avatar1.jpg') }}" alt="avatar"
+                    <img src="{{ asset('assets/img/sample/avatar/profile-blue.jpg') }}" alt="avatar"
                         class="imaged w100 rounded">
                 </a>
             </div>

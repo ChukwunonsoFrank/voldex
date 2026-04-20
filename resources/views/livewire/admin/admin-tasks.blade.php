@@ -188,7 +188,7 @@
                                         <tr wire:key="task-{{ $task->id }}" x-data="{ isActionDropdownOpen: false }">
                                             <td class="py-3 pr-5 whitespace-nowrap sm:pr-5">
                                                 <div class="flex items-center">
-                                                    <img src="{{ Storage::url($task->task_image_path) }}"
+                                                    <img src="{{ route('storage.file', $task->task_image_path) }}"
                                                         alt="Task Image"
                                                         class="h-12 w-20 rounded-lg object-cover" />
                                                 </div>

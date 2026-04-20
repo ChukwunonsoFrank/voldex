@@ -8,7 +8,7 @@
             @forelse ($events as $event)
                 <div wire:key="event-{{ $event->id }}" style="margin-bottom: 4px;">
                     <img
-                        src="{{ asset('storage/' . $event->poster_image_path) }}"
+                        src="{{ route('storage.file', $event->poster_image_path) }}"
                         alt="Event flyer"
                         class="imaged w-100"
                         style="border-radius: 8px; display: block;"

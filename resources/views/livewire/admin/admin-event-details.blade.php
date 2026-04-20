@@ -79,7 +79,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Current Poster
                                 </label>
-                                <img src="{{ Storage::url($this->previousImagePath) }}"
+                                <img src="{{ route('storage.file', $this->previousImagePath) }}"
                                     alt="Current Event Poster"
                                     class="h-32 w-auto rounded-lg object-cover mb-3" />
                             </div>

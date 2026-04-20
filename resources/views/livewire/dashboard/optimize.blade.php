@@ -4,7 +4,7 @@
         @if ($task)
             <div class="section mt-2">
                 <div class="card">
-                    <img src="{{ asset('storage/' . $task->task_image_path) }}" class="card-img-top" alt="image">
+                    <img src="{{ route('storage.file', $task->task_image_path) }}" class="card-img-top" alt="image">
                     <div class="card-body">
                         <h5 class="card-title text-black text-center font-bold mb-3">{{ $task->title }}</h5>
 

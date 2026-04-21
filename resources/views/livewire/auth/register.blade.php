@@ -38,6 +38,7 @@
                             <div style="display: flex; gap: 8px; align-items: center;" x-data="{
                                 open: false,
                                 search: '',
+                                selectedIso: $wire.entangle('country_iso'),
                                 countries: [
                                     { code: '+93', iso: 'af', name: 'Afghanistan' },
                                     { code: '+355', iso: 'al', name: 'Albania' },
@@ -239,7 +240,7 @@
                                     { code: '+263', iso: 'zw', name: 'Zimbabwe' },
                                 ],
                                 get selected() {
-                                    return this.countries.find(c => c.iso === $wire.country_iso) || this.countries[0];
+                                    return this.countries.find(c => c.iso === this.selectedIso) || this.countries[0];
                                 },
                                 get filtered() {
                                     if (!this.search) return this.countries;
@@ -248,7 +249,7 @@
                                 },
                                 select(country) {
                                     $wire.country_code = country.code;
-                                    $wire.country_iso = country.iso;
+                                    this.selectedIso = country.iso;
                                     this.open = false;
                                     this.search = '';
                                 }

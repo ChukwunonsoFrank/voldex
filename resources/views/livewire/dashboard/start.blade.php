@@ -128,5 +128,9 @@
         $wire.on('insufficient-balance', (event) => {
             toast(event.message)
         });
+
+        $wire.on('minimum-balance-required', (event) => {
+            toast(event.message)
+        });
     </script>
 @endscript

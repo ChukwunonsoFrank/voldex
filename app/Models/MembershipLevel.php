@@ -14,6 +14,7 @@ class MembershipLevel extends Model
     protected $fillable = [
         'name',
         'percentage',
+        'minimum_balance',
         'icon_image_path',
     ];
 }

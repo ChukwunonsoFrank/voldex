@@ -252,6 +252,25 @@ test('starting a new task with a pending task redirects to record page', functio
         ->assertSessionHas('pending_task_warning', 'You have one or more tasks pending completion. Complete it to continue.');
 });
 
+test('user with balance below membership minimum balance gets toast', function () {
+    $this->membershipLevel->update(['minimum_balance' => '100000']);
+
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 50000,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Start::class)
+        ->call('startTask')
+        ->assertDispatched('minimum-balance-required', message: 'The minimum balance for this level is 1,000.00 USDT');
+});
+
 test('user with insufficient balance gets insufficient balance toast', function () {
     $user = User::factory()->create([
         'membership_level' => 'VIP0',

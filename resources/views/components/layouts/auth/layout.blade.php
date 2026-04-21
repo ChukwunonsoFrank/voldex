@@ -12,6 +12,7 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.5.0/css/flag-icons.min.css">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>

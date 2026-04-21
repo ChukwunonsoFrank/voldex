@@ -18,6 +18,8 @@ test('new users can register', function () {
 
     $response = Livewire::test(Register::class)
         ->set('username', 'testuser')
+        ->set('email', 'testuser@example.com')
+        ->set('country_code', '+234')
         ->set('mobile_number', '1234567890')
         ->set('password', 'Password1!')
         ->set('password_confirmation', 'Password1!')

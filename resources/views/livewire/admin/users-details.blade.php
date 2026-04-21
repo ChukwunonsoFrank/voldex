@@ -186,6 +186,29 @@
 
                     <div class="flex items-end justify-between">
                         <div>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Email</span>
+                            <h5 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">
+                                {{ $this->email }}
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Metric Item End -->
+
+                <!-- Metric Item Start -->
+                <div
+                    class="grow rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+                        <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M11.665 3.75618C11.8762 3.65061 12.1247 3.65061 12.3358 3.75618L18.7807 6.97853L12.3358 10.2009C12.1247 10.3064 11.8762 10.3064 11.665 10.2009L5.22014 6.97853L11.665 3.75618ZM4.29297 8.19199V16.0946C4.29297 16.3787 4.45347 16.6384 4.70757 16.7654L11.25 20.0365V11.6512C11.1631 11.6205 11.0777 11.5843 10.9942 11.5425L4.29297 8.19199ZM12.75 20.037L19.2933 16.7654C19.5474 16.6384 19.7079 16.3787 19.7079 16.0946V8.19199L13.0066 11.5425C12.9229 11.5844 12.8372 11.6207 12.75 11.6515V20.037ZM13.0066 2.41453C12.3732 2.09783 11.6277 2.09783 10.9942 2.41453L4.03676 5.89316C3.27449 6.27429 2.79297 7.05339 2.79297 7.90563V16.0946C2.79297 16.9468 3.27448 17.7259 4.03676 18.1071L10.9942 21.5857L11.3296 20.9149L10.9942 21.5857C11.6277 21.9024 12.3732 21.9024 13.0066 21.5857L19.9641 18.1071C20.7264 17.7259 21.2079 16.9468 21.2079 16.0946V7.90563C21.2079 7.05339 20.7264 6.27429 19.9641 5.89316L13.0066 2.41453Z"
+                                fill="" />
+                        </svg>
+                    </div>
+
+                    <div class="flex items-end justify-between">
+                        <div>
                             <span class="text-sm text-gray-500 dark:text-gray-400">Task Completed Today</span>
                             <h5 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">
                                 {{ $this->tasksCompleted }}
@@ -430,14 +453,12 @@
                     </nav>
                 </div>
                 <div class="rounded-b-xl border border-t-0 border-gray-200 p-6 pt-4 dark:border-gray-800">
-                    <div
-                        class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                         <div class="p-5 space-y-6 border-t border-gray-100 dark:border-gray-800 sm:p-6">
                             <form wire:submit.prevent="updateCreditScore()">
                                 <div class="-mx-2.5 flex flex-wrap gap-y-5">
                                     <div class="w-full px-2.5">
-                                        <input wire:model="newCreditScore" type="text"
-                                            placeholder="Credit Score"
+                                        <input wire:model="newCreditScore" type="text" placeholder="Credit Score"
                                             class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
                                             @error('newCreditScore') style="border-color: #ef4444;" @enderror />
                                         @error('newCreditScore')

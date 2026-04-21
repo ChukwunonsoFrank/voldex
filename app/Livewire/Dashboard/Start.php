@@ -59,6 +59,14 @@ class Start extends Component
             return;
         }
 
+        $taskCostInCents = (int) round((float) $task->cost * 100);
+
+        if (($user->balance ?? 0) < $taskCostInCents) {
+            $this->dispatch('insufficient-balance', message: 'Insufficient balance to complete task. Top up to continue.')->self();
+
+            return;
+        }
+
         $completedTask = CompletedTask::create([
             'user_id' => $user->id,
             'title' => $task->title,

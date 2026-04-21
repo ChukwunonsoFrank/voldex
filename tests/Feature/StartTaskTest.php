@@ -251,3 +251,20 @@ test('starting a new task with a pending task redirects to record page', functio
         ->assertRedirect(route('dashboard.record'))
         ->assertSessionHas('pending_task_warning', 'You have one or more tasks pending completion. Complete it to continue.');
 });
+
+test('user with insufficient balance gets insufficient balance toast', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 500,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Start::class)
+        ->call('startTask')
+        ->assertDispatched('insufficient-balance', message: 'Insufficient balance to complete task. Top up to continue.');
+});

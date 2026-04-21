@@ -124,5 +124,9 @@
         $wire.on('task-limit-reached', (event) => {
             toast(event.message)
         });
+
+        $wire.on('insufficient-balance', (event) => {
+            toast(event.message)
+        });
     </script>
 @endscript

@@ -10,6 +10,13 @@ use Livewire\Component;
 #[Layout('components.layouts.app')]
 class Optimize extends Component
 {
+    public int $rating = 0;
+
+    public function setRating(int $rating): void
+    {
+        $this->rating = ($rating === $this->rating) ? 0 : $rating;
+    }
+
     public function submitTask(): void
     {
         $taskId = session('pending_task_id');
@@ -20,7 +27,7 @@ class Optimize extends Component
             ->where('status', 'pending')
             ->firstOrFail();
 
-        $task->update(['status' => 'approved']);
+        $task->update(['status' => 'approved', 'rating' => $this->rating]);
 
         $user = auth()->user();
         $user->increment('tasks_completed');

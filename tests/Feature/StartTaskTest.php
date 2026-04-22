@@ -271,6 +271,38 @@ test('user with balance below membership minimum balance gets toast', function (
         ->assertDispatched('minimum-balance-required', message: 'The minimum balance for this level is 1,000.00 USDT');
 });
 
+test('star rating saves to completed task on submit', function () {
+    $completedTask = CompletedTask::create([
+        'user_id' => $this->user->id,
+        'title' => 'Test Product',
+        'cost' => 100,
+        'task_image_path' => 'tasks/test.jpg',
+        'rating' => '0',
+        'rating_id' => 'abc12345678901',
+        'status' => 'pending',
+    ]);
+
+    session(['pending_task_id' => $completedTask->id]);
+
+    Livewire::actingAs($this->user)
+        ->test(Optimize::class)
+        ->assertSee('abc12345678901')
+        ->assertSet('rating', 0)
+        ->call('setRating', 4)
+        ->assertSet('rating', 4)
+        ->call('setRating', 2)
+        ->assertSet('rating', 2)
+        ->call('setRating', 2)
+        ->assertSet('rating', 0)
+        ->call('setRating', 5)
+        ->assertSet('rating', 5)
+        ->call('submitTask')
+        ->assertRedirect(route('dashboard.start'));
+
+    $completedTask->refresh();
+    expect($completedTask->rating)->toBe('5');
+});
+
 test('user with insufficient balance gets insufficient balance toast', function () {
     $user = User::factory()->create([
         'membership_level' => 'VIP0',

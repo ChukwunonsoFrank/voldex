@@ -43,7 +43,7 @@
                         </a>
                     </div>
                     <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#sendActionSheet">
+                        <a href="{{ route('dashboard.deposit') }}">
                             <div class="icon-wrapper">
                                 <ion-icon name="card"></ion-icon>
                             </div>
@@ -110,34 +110,6 @@
         </div>
         <!-- Wallet Card -->
 
-        <!-- Send Action Sheet -->
-        <div class="modal fade action-sheet" id="sendActionSheet" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Recharge</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="action-sheet-content">
-                            <form>
-                                <div class="form-group basic text-center">
-                                    <p class="text-black">Please contact customer service for further assistance</p>
-                                </div>
-
-                                <div class="form-group basic">
-                                    <a href="{{ route('dashboard.contact') }}">
-                                        <button type="button" class="btn btn-primary btn-block btn-lg"
-                                            data-bs-dismiss="modal">Confirm</button>
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- * Send Action Sheet -->
-
         <!-- Transactions -->
         <div class="section mt-4 mb-4">
             <div class="section-heading">
@@ -145,11 +117,15 @@
             </div>
             <div class="transactions" style="overflow: hidden; position: relative;">
                 @php $brands = ['a16z.png', 'dune.png', 'makers_fund.png', 'mitimco.png', 'qia.jpg', 'raine.png', 'tirta.jpg']; @endphp
-                <div class="marquee-track" style="display: flex; gap: 3rem; animation: marquee-scroll 20s linear infinite; width: max-content;">
+                <div class="marquee-track"
+                    style="display: flex; gap: 3rem; animation: marquee-scroll 20s linear infinite; width: max-content;">
                     @for ($i = 0; $i < 4; $i++)
-                        @foreach($brands as $logo)
-                            <a href="javascript:void(0)" class="item" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-width: 150px;">
-                                <img src="{{ asset('assets/img/brands/' . $logo) }}" alt="{{ pathinfo($logo, PATHINFO_FILENAME) }}" style="max-height: 40px; max-width: 120px; object-fit: contain;">
+                        @foreach ($brands as $logo)
+                            <a href="javascript:void(0)" class="item"
+                                style="flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-width: 150px;">
+                                <img src="{{ asset('assets/img/brands/' . $logo) }}"
+                                    alt="{{ pathinfo($logo, PATHINFO_FILENAME) }}"
+                                    style="max-height: 40px; max-width: 120px; object-fit: contain;">
                             </a>
                         @endforeach
                     @endfor
@@ -157,8 +133,15 @@
             </div>
             <style>
                 @keyframes marquee-scroll {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); } /* shifts 2 of 4 sets, seamless loop */
+                    0% {
+                        transform: translateX(0);
+                    }
+
+                    100% {
+                        transform: translateX(-50%);
+                    }
+
+                    /* shifts 2 of 4 sets, seamless loop */
                 }
             </style>
         </div>

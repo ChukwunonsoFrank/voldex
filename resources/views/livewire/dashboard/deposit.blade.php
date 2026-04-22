@@ -16,8 +16,8 @@
                                 </i>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg btn-block mt-3"
-                            x-on:click="if (amount > 0) { $nextTick(() => new bootstrap.Modal(document.getElementById('sendActionSheet')).show()) }">
+                        <button type="button" class="btn btn-primary btn-lg btn-block mt-3"
+                            x-on:click="if (amount > 0) { new bootstrap.Modal(document.getElementById('sendActionSheet')).show() }">
                             Deposit
                         </button>
                     </form>

@@ -43,7 +43,7 @@
                 <!-- Wallet Footer -->
                 <div class="wallet-footer mb-3">
                     <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#sendActionSheet">
+                        <a href="{{ route('dashboard.deposit') }}">
                             <div class="icon-wrapper">
                                 <ion-icon name="card"></ion-icon>
                             </div>
@@ -115,34 +115,6 @@
                 <!-- * Wallet Footer -->
             </div>
             <!-- Wallet Card -->
-
-            <!-- Send Action Sheet -->
-            <div class="modal fade action-sheet" id="sendActionSheet" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Recharge</h5>
-                        </div>
-                        <div class="modal-body">
-                            <div class="action-sheet-content">
-                                <form>
-                                    <div class="form-group basic text-center">
-                                        <p class="text-black">Please contact customer service for further assistance</p>
-                                    </div>
-
-                                    <div class="form-group basic">
-                                        <a href="{{ route('dashboard.contact') }}">
-                                            <button type="button" class="btn btn-primary btn-block btn-lg"
-                                                data-bs-dismiss="modal">Confirm</button>
-                                        </a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- * Send Action Sheet -->
 
             <!-- Stats -->
             <div class="pb-2">

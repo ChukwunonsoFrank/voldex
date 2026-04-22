@@ -2,15 +2,15 @@
     <!-- App Capsule -->
     <div id="appCapsule">
         <div class="section mt-2 mb-2">
-            <div class="section-title">Deposit</div>
+            <div class="section-title">Recharge Account</div>
             <div class="card">
                 <div class="card-body">
                     <form wire:submit="submitDeposit">
                         <div class="form-group boxed">
                             <div class="input-wrapper">
                                 <label class="label" for="amount">Amount</label>
-                                <input wire:model="amount" x-model.number="amount" type="number" class="form-control" id="amount"
-                                    step="0.01" min="0">
+                                <input wire:model="amount" x-model.number="amount" type="number" class="form-control"
+                                    id="amount" step="0.01" min="0">
                                 <i class="clear-input">
                                     <ion-icon name="close-circle"></ion-icon>
                                 </i>

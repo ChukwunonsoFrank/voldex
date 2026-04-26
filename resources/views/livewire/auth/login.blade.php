@@ -35,6 +35,8 @@
                 </div>
             </div>
 
+            <input wire:model="timezone" type="hidden" id="timezone" value="UTC">
+
             <div class="form-links mt-2">
                 <div>
                     @if (Route::has('register'))
@@ -92,6 +94,13 @@
     <script>
         $wire.on('login-error', (event) => {
             toast(event.message)
+        });
+
+        // Detect user's timezone and set it
+        document.addEventListener('DOMContentLoaded', function() {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('timezone').value = timezone;
+            $wire.set('timezone', timezone);
         });
     </script>
 @endscript

@@ -43,6 +43,7 @@ class User extends Authenticatable
         'account_status',
         'lien_amount',
         'lien_status',
+        'timezone',
     ];
 
     /**

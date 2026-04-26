@@ -314,8 +314,8 @@
                         <div class="input-wrapper">
                             <label class="label" for="password_confirmation">Confirm Password</label>
                             <input wire:model="password_confirmation" type="password" class="form-control"
-                                id="password_confirmation" autocomplete="new-password" placeholder="Type password again"
-                                required>
+                                id="password_confirmation" autocomplete="new-password"
+                                placeholder="Type password again" required>
                             <i class="clear-input">
                                 <ion-icon name="close-circle"></ion-icon>
                             </i>
@@ -357,6 +357,8 @@
                     </div>
                 </div>
             </div>
+
+            <input wire:model="timezone" type="hidden" id="timezone" value="UTC">
 
             <div wire:ignore class="g-recaptcha mt-2 mb-1 px-2" data-sitekey="{{ config('services.recaptcha.key') }}"
                 data-callback="onRecaptchaSuccess"></div>
@@ -412,6 +414,13 @@
     <script>
         $wire.on('signup-error', (event) => {
             toast(event.message)
+        });
+
+        // Detect user's timezone and set it
+        document.addEventListener('DOMContentLoaded', function() {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('timezone').value = timezone;
+            $wire.set('timezone', timezone);
         });
     </script>
 @endscript

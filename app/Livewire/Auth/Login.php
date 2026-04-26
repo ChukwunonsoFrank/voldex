@@ -17,85 +17,90 @@ use Livewire\Component;
 #[Title('Login')]
 class Login extends Component
 {
-    #[Validate('required|string')]
-    public string $username = '';
+  #[Validate('required|string')]
+  public string $username = '';
 
-    #[Validate('required|string')]
-    public string $password = '';
+  #[Validate('required|string')]
+  public string $password = '';
 
-    public bool $remember = false;
+  public bool $remember = false;
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function login()
-    {
-        try {
-            $this->validate();
+  public string $timezone = 'UTC';
 
-            $this->ensureIsNotRateLimited();
+  /**
+   * Handle an incoming authentication request.
+   */
+  public function login()
+  {
+    try {
+      $this->validate();
 
-            if (
-                ! Auth::attempt(
-                    [
-                        'username' => $this->username,
-                        'password' => $this->password,
-                    ],
-                    $this->remember,
-                )
-            ) {
-                RateLimiter::hit($this->throttleKey());
+      $this->ensureIsNotRateLimited();
 
-                throw ValidationException::withMessages([
-                    'username' => __('auth.failed'),
-                ]);
-            }
-
-            RateLimiter::clear($this->throttleKey());
-            Session::regenerate();
-
-            session()->flash('just_logged_in', true);
-
-            if (Auth::user()->is_admin) {
-                return redirect('/admin/dashboard/users');
-            }
-
-            $this->redirectIntended(
-                default: '/dashboard',
-            );
-        } catch (\Exception $e) {
-            $this->dispatch('login-error', message: $e->getMessage())->self();
-        }
-    }
-
-    /**
-     * Ensure the authentication request is not rate limited.
-     */
-    protected function ensureIsNotRateLimited(): void
-    {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
-            return;
-        }
-
-        event(new Lockout(request()));
-
-        $seconds = RateLimiter::availableIn($this->throttleKey());
+      if (
+        ! Auth::attempt(
+          [
+            'username' => $this->username,
+            'password' => $this->password,
+          ],
+          $this->remember,
+        )
+      ) {
+        RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'username' => __('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+          'username' => __('auth.failed'),
         ]);
+      }
+
+      RateLimiter::clear($this->throttleKey());
+      Session::regenerate();
+
+      // Update user's timezone
+      Auth::user()->update(['timezone' => $this->timezone]);
+
+      session()->flash('just_logged_in', true);
+
+      if (Auth::user()->is_admin) {
+        return redirect('/admin/dashboard/users');
+      }
+
+      $this->redirectIntended(
+        default: '/dashboard',
+      );
+    } catch (\Exception $e) {
+      $this->dispatch('login-error', message: $e->getMessage())->self();
+    }
+  }
+
+  /**
+   * Ensure the authentication request is not rate limited.
+   */
+  protected function ensureIsNotRateLimited(): void
+  {
+    if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+      return;
     }
 
-    /**
-     * Get the authentication rate limiting throttle key.
-     */
-    protected function throttleKey(): string
-    {
-        return Str::transliterate(
-            Str::lower($this->username).'|'.request()->ip(),
-        );
-    }
+    event(new Lockout(request()));
+
+    $seconds = RateLimiter::availableIn($this->throttleKey());
+
+    throw ValidationException::withMessages([
+      'username' => __('auth.throttle', [
+        'seconds' => $seconds,
+        'minutes' => ceil($seconds / 60),
+      ]),
+    ]);
+  }
+
+  /**
+   * Get the authentication rate limiting throttle key.
+   */
+  protected function throttleKey(): string
+  {
+    return Str::transliterate(
+      Str::lower($this->username) . '|' . request()->ip(),
+    );
+  }
 }

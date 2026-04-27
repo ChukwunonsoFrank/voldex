@@ -19,9 +19,17 @@ class ResetDailyTasks implements ShouldQueue
       foreach ($users as $user) {
         $userNow = now($user->timezone);
 
-        // Reset tasks if it's midnight for this user
+        // Check if it's midnight for this user and they haven't been reset today
         if ($userNow->hour === 0) {
-          $user->update(['tasks_completed' => 0]);
+          $lastReset = $user->last_reset_at?->setTimezone($user->timezone);
+
+          // Only reset if not already reset today in user's timezone
+          if (! $lastReset || ! $lastReset->isToday()) {
+            $user->update([
+              'tasks_completed' => 0,
+              'last_reset_at' => now(),
+            ]);
+          }
         }
       }
     });

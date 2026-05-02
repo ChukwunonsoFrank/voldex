@@ -18,21 +18,9 @@ class WithdrawalInitiated extends Notification implements ShouldQueue
   /**
    * Create a new notification instance.
    */
-  public function __construct(public string $name, public string $amount)
+  public function __construct(public string $username, public string $amount)
   {
     //
-  }
-
-  /**
-   * Determine which queues should be used for each notification channel.
-   *
-   * @return array<string, string>
-   */
-  public function viaQueues(): array
-  {
-    return [
-      'mail' => 'notifications',
-    ];
   }
 
   /**
@@ -52,7 +40,7 @@ class WithdrawalInitiated extends Notification implements ShouldQueue
   {
     return (new MailMessage)
       ->subject('Pending Withdrawal')
-      ->greeting("Hi " . $this->name . ',')
+      ->greeting("Hi " . $this->username . ',')
       ->line("You just made a withdrawal of $" . $this->amount . ".")
       ->line("Your withdrawal is being processed on the blockchain and will be confirmed shortly.");
   }

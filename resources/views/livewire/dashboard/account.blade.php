@@ -153,7 +153,7 @@
                         <div class="stat-box" style="padding: 14px 24px;">
                             <div class="title" style="font-size: 11px;">Processing Amount</div>
                             <div class="value" style="font-size: 16px;">
-                                {{ number_format(($pendingWithdrawalsTotal ?? 0) / 100, 2) }} USDT</div>
+                                {{ number_format(($user->processing_amount ?? 0) / 100, 2) }} USDT</div>
                         </div>
                     </div>
                 </div>

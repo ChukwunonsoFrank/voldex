@@ -5,7 +5,6 @@ namespace App\Livewire\Dashboard;
 use App\Models\CompletedTask;
 use App\Models\MembershipLevel;
 use App\Models\Task;
-use App\Models\Withdrawal;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -109,16 +108,11 @@ class Start extends Component
             ->get()
             ->sum(fn (CompletedTask $task) => (float) $task->cost * $percentage);
 
-        $pendingWithdrawalsTotal = Withdrawal::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->sum('amount');
-
         return view('livewire.dashboard.start', [
             'membershipLevels' => MembershipLevel::all(),
             'userLevel' => $user->membership_level,
             'user' => $user,
             'todaysCommission' => $todaysCommission,
-            'pendingWithdrawalsTotal' => $pendingWithdrawalsTotal,
         ]);
     }
 }

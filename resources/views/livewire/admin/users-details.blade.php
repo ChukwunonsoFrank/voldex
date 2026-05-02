@@ -406,6 +406,73 @@
                         class="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-1.5">
                         <span
                             class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium bg-white text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white">
+                            Update Balances
+                        </span>
+                    </nav>
+                </div>
+                <div class="rounded-b-xl border border-t-0 border-gray-200 p-6 pt-4 dark:border-gray-800">
+                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="p-5 space-y-6 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+                            <form wire:submit.prevent="updateBalances()">
+                                <div class="-mx-2.5 flex flex-wrap gap-y-5">
+                                    <div class="w-full px-2.5">
+                                        <label
+                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Daily
+                                            Commission (USD)</label>
+                                        <input wire:model="newDailyCommission" type="text"
+                                            placeholder="Daily Commission"
+                                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
+                                            @error('newDailyCommission') style="border-color: #ef4444;" @enderror />
+                                        @error('newDailyCommission')
+                                            <p class="mt-1 text-sm" style="color: #ef4444;">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div class="w-full px-2.5">
+                                        <label
+                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Total
+                                            Commission (USD)</label>
+                                        <input wire:model="newTotalCommission" type="text"
+                                            placeholder="Total Commission"
+                                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
+                                            @error('newTotalCommission') style="border-color: #ef4444;" @enderror />
+                                        @error('newTotalCommission')
+                                            <p class="mt-1 text-sm" style="color: #ef4444;">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div class="w-full px-2.5">
+                                        <label
+                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Processing
+                                            Amount (USD)</label>
+                                        <input wire:model="newProcessingAmount" type="text"
+                                            placeholder="Processing Amount"
+                                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
+                                            @error('newProcessingAmount') style="border-color: #ef4444;" @enderror />
+                                        @error('newProcessingAmount')
+                                            <p class="mt-1 text-sm" style="color: #ef4444;">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div class="w-full px-2.5">
+                                        <button type="submit" wire:loading.attr="disabled"
+                                            class="w-full p-3 text-sm font-medium text-white transition-colors rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-50 disabled:pointer-events-none">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="rounded-t-xl border border-gray-200 p-3 dark:border-gray-800">
+                    <nav
+                        class="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-1.5">
+                        <span
+                            class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium bg-white text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white">
                             Upgrade Membership
                         </span>
                     </nav>

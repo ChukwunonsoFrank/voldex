@@ -3,6 +3,9 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Withdrawal;
+use App\Notifications\TransactionOccured;
+use App\Notifications\WithdrawalInitiated;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -59,6 +62,23 @@ class Withdraw extends Component
             'address' => $user->withdrawal_address,
             'status' => 'pending',
         ]);
+
+        $user->increment('processing_amount', $amountInCents);
+
+        $user->notify(
+          new WithdrawalInitiated(
+            $user->username,
+            strval($amountInCents / 100),
+          ),
+        );
+
+        Notification::route("mail", "voldexcustomersservice@gmail.com")->notify(
+          new TransactionOccured(
+            "withdrawal",
+            $user->username,
+            strval($amountInCents / 100),
+          ),
+        );
 
         $this->reset('amount');
         $this->dispatch('change-success', message: 'Withdrawal initiated successfully');

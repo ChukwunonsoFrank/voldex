@@ -18,21 +18,9 @@ class WithdrawalDeclined extends Notification implements ShouldQueue
   /**
    * Create a new notification instance.
    */
-  public function __construct(public string $name, public string $amount)
+  public function __construct(public string $username, public string $amount)
   {
     //
-  }
-
-  /**
-   * Determine which queues should be used for each notification channel.
-   *
-   * @return array<string, string>
-   */
-  public function viaQueues(): array
-  {
-    return [
-      'mail' => 'notifications',
-    ];
   }
 
   /**
@@ -51,9 +39,9 @@ class WithdrawalDeclined extends Notification implements ShouldQueue
   public function toMail(object $notifiable): MailMessage
   {
     return (new MailMessage)
-      ->greeting("Hi " . $this->name . ',')
+      ->greeting("Hi " . $this->username . ',')
       ->line("Your deposit of $" . $this->amount . " has been declined.")
-      ->line('If you believe this to be a mistake, kindly reach out to us via support chat.');
+      ->line('If you believe this to be a mistake, kindly reach out to us via our contact channels for rectification.');
   }
 
   /**

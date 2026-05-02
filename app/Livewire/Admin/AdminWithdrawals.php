@@ -4,8 +4,8 @@ namespace App\Livewire\Admin;
 
 use App\Models\User;
 use App\Models\Withdrawal;
-// use App\Notifications\WithdrawalApproved;
-// use App\Notifications\WithdrawalDeclined;
+use App\Notifications\WithdrawalApproved;
+use App\Notifications\WithdrawalDeclined;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -77,6 +77,7 @@ class AdminWithdrawals extends Component
 
                 // Update user balance
                 $user->balance = $newBalance;
+                $user->processing_amount = max(0, (int) $user->processing_amount - $amount);
                 $user->save();
 
                 // Update withdrawal status
@@ -84,9 +85,9 @@ class AdminWithdrawals extends Component
                 $withdrawal->save();
 
                 // Send notification (inside transaction)
-                // $user->notify(
-                //   new WithdrawalApproved($user->name, strval($amount / 100)),
-                // );
+                $user->notify(
+                  new WithdrawalApproved($user->username, strval($amount / 100)),
+                );
             });
             session()->flash(
                 'success-message',
@@ -139,14 +140,17 @@ class AdminWithdrawals extends Component
                     throw new \Exception('User not found');
                 }
 
+                $user->processing_amount = max(0, (int) $user->processing_amount - $amount);
+                $user->save();
+
                 // Update withdrawal status
                 $withdrawal->status = 'declined';
                 $withdrawal->save();
 
                 // Send notification (inside transaction)
-                // $user->notify(
-                //   new WithdrawalDeclined($user->name, strval($amount / 100)),
-                // );
+                $user->notify(
+                  new WithdrawalDeclined($user->username, strval($amount / 100)),
+                );
             });
 
             session()->flash(

@@ -73,7 +73,7 @@
                 <div class="col-12">
                     <div class="stat-box">
                         <div class="title">Processing Amount</div>
-                        <div class="value">{{ number_format(($pendingWithdrawalsTotal ?? 0) / 100, 2) }} USDT</div>
+                        <div class="value">{{ number_format(($user->processing_amount ?? 0) / 100, 2) }} USDT</div>
                     </div>
                 </div>
             </div>

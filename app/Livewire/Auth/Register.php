@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
@@ -22,7 +23,7 @@ use Livewire\Component;
 class Register extends Component
 {
     #[Url]
-    public $ref;
+    public ?string $ref = null;
 
     public string $username = '';
 
@@ -38,17 +39,17 @@ class Register extends Component
 
     public string $withdrawal_password = '';
 
-    public $ref_code = '';
+    public string $ref_code = '';
 
     public string $timezone = 'UTC';
 
     public bool $termsAndPrivacyPolicyAccepted = false;
 
-    public $gRecaptchaResponse;
+    public ?string $gRecaptchaResponse = null;
 
     public function mount(): void
     {
-        $this->ref_code = $this->ref;
+        $this->ref_code = $this->ref ?? '';
     }
 
     /**
@@ -68,31 +69,31 @@ class Register extends Component
     {
         try {
             if ($this->gRecaptchaResponse === null) {
-              $this->dispatch(
-                'signup-error',
-                message: 'Please confirm you are not a robot.',
-              )->self();
+                $this->dispatch(
+                    'signup-error',
+                    message: 'Please confirm you are not a robot.',
+                )->self();
 
-              return;
+                return;
             }
 
             $recaptchaResponse = Http::get(
-              'https://www.google.com/recaptcha/api/siteverify',
-              [
-                'secret' => config('services.recaptcha.secret'),
-                'response' => $this->gRecaptchaResponse,
-              ],
+                'https://www.google.com/recaptcha/api/siteverify',
+                [
+                    'secret' => config('services.recaptcha.secret'),
+                    'response' => $this->gRecaptchaResponse,
+                ],
             );
 
             $result = $recaptchaResponse->json();
 
-            if (! $recaptchaResponse->successful() || $result['success'] != true) {
-              $this->dispatch(
-                'signup-error',
-                message: 'Please confirm you are not a robot.',
-              )->self();
+            if (! $recaptchaResponse->successful() || ($result['success'] ?? false) !== true) {
+                $this->dispatch(
+                    'signup-error',
+                    message: 'Please confirm you are not a robot.',
+                )->self();
 
-              return;
+                return;
             }
 
             $validated = $this->validate([
@@ -113,7 +114,7 @@ class Register extends Component
 
             unset($validated['termsAndPrivacyPolicyAccepted']);
 
-            $refCode = $this->ref ?? $this->ref_code;
+            $refCode = trim($this->ref_code) ?: null;
             if ($refCode && ! User::where('referral_code', $refCode)->exists()) {
                 $this->dispatch('signup-error', message: 'Invalid referral code.')->self();
 
@@ -151,15 +152,17 @@ class Register extends Component
 
             $user->notify(new RegisterBonusEarned($user->username, '10'));
 
-            $referralCodeOwner = User::where('referral_code', '=', $refCode)->first();
+            if ($refCode) {
+                $referralCodeOwner = User::where('referral_code', $refCode)->first();
 
-            if ($referralCodeOwner) {
-                $referralCodeOwner->notify(
-                    new ReferralLinkApplied(
-                        $referralCodeOwner->username,
-                        $user->username,
-                    ),
-                );
+                if ($referralCodeOwner) {
+                    $referralCodeOwner->notify(
+                        new ReferralLinkApplied(
+                            $referralCodeOwner->username,
+                            $user->username,
+                        ),
+                    );
+                }
             }
 
             Auth::login($user);
@@ -170,8 +173,15 @@ class Register extends Component
                 '/dashboard',
                 navigate: false,
             );
-        } catch (\Exception $e) {
-            $this->dispatch('signup-error', message: $e->getMessage())->self();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('Registration failed', ['exception' => $e]);
+
+            $this->dispatch(
+                'signup-error',
+                message: 'Something went wrong while creating your account. Please try again.',
+            )->self();
         }
     }
 

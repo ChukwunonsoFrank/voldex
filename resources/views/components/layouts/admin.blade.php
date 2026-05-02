@@ -126,6 +126,27 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                                 </a>
                             </li>
                             <!-- Menu Item Tasks -->
+
+                            <!-- Menu Item Membership Levels -->
+                            <li>
+                                <a href="{{ route('admin.dashboard.membershiplevels') }}"
+                                    @click="selected = (selected === 'MembershipLevels' ? '':'MembershipLevels')" class="menu-item group"
+                                    :class="(selected === 'MembershipLevels') && (page === 'membershiplevels') ? 'menu-item-active' :
+                                    'menu-item-inactive'">
+                                    <svg class="menu-item-icon-inactive" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                        class="menu-item-icon-inactive">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M12 2.25C12.2841 2.25 12.5451 2.40563 12.6803 2.65538L15.2362 7.36087L20.4854 8.30403C20.7642 8.35411 20.9952 8.5489 21.0858 8.81698C21.1764 9.08506 21.1115 9.38116 20.9171 9.58626L17.2654 13.4393L17.9882 18.7314C18.0265 19.0117 17.9075 19.291 17.6779 19.4577C17.4483 19.6244 17.146 19.6502 16.8911 19.5247L12 17.1199L7.10892 19.5247C6.85399 19.6502 6.55173 19.6244 6.32213 19.4577C6.09253 19.291 5.97351 19.0117 6.0118 18.7314L6.73465 13.4393L3.08291 9.58626C2.88848 9.38116 2.82362 9.08506 2.91421 8.81698C3.00481 8.5489 3.23583 8.35411 3.51458 8.30403L8.76382 7.36087L11.3197 2.65538C11.4549 2.40563 11.7159 2.25 12 2.25Z"
+                                            fill="currentColor"></path>
+                                    </svg>
+
+                                    <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                        Membership Levels
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- Menu Item Membership Levels -->
                         </ul>
                     </div>
                 </nav>

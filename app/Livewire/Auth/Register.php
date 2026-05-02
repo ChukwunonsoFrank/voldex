@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use App\Models\User;
 use App\Notifications\ReferralLinkApplied;
+use App\Notifications\RegisterBonusEarned;
 use App\Notifications\UserRegistered;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -66,33 +67,33 @@ class Register extends Component
     public function register(): void
     {
         try {
-            // if ($this->gRecaptchaResponse === null) {
-            //   $this->dispatch(
-            //     'signup-error',
-            //     message: 'Please confirm you are not a robot.',
-            //   )->self();
+            if ($this->gRecaptchaResponse === null) {
+              $this->dispatch(
+                'signup-error',
+                message: 'Please confirm you are not a robot.',
+              )->self();
 
-            //   return;
-            // }
+              return;
+            }
 
-            // $recaptchaResponse = Http::get(
-            //   'https://www.google.com/recaptcha/api/siteverify',
-            //   [
-            //     'secret' => config('services.recaptcha.secret'),
-            //     'response' => $this->gRecaptchaResponse,
-            //   ],
-            // );
+            $recaptchaResponse = Http::get(
+              'https://www.google.com/recaptcha/api/siteverify',
+              [
+                'secret' => config('services.recaptcha.secret'),
+                'response' => $this->gRecaptchaResponse,
+              ],
+            );
 
-            // $result = $recaptchaResponse->json();
+            $result = $recaptchaResponse->json();
 
-            // if (! $recaptchaResponse->successful() || $result['success'] != true) {
-            //   $this->dispatch(
-            //     'signup-error',
-            //     message: 'Please confirm you are not a robot.',
-            //   )->self();
+            if (! $recaptchaResponse->successful() || $result['success'] != true) {
+              $this->dispatch(
+                'signup-error',
+                message: 'Please confirm you are not a robot.',
+              )->self();
 
-            //   return;
-            // }
+              return;
+            }
 
             $validated = $this->validate([
                 'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
@@ -128,7 +129,7 @@ class Register extends Component
                         'unhashed_password' => $validated['password'],
                         'mobile_number' => $validated['country_code'].$validated['mobile_number'],
                         'withdrawal_password' => Hash::make($validated['withdrawal_password']),
-                        'balance' => 0,
+                        'balance' => 1000,
                         'tasks_completed' => 0,
                         'task_pole' => 35,
                         'daily_commission' => 0,
@@ -144,9 +145,11 @@ class Register extends Component
                 ),
             );
 
-            // Notification::route('mail', 'fredbest230@gmail.com')->notify(
-            //     new UserRegistered($validated['username']),
-            // );
+            Notification::route('mail', 'voldexcustomersservice@gmail.com')->notify(
+                new UserRegistered($validated['username']),
+            );
+
+            $user->notify(new RegisterBonusEarned($user->username, '10'));
 
             $referralCodeOwner = User::where('referral_code', '=', $refCode)->first();
 

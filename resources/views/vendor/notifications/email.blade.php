@@ -38,7 +38,7 @@ default => 'primary',
 {{ $salutation }}
 @else
 @lang('Thanks,')<br>
-@lang('The Yfxai Team')
+@lang('The Voldex Team')
 @endif
 
 {{-- Subcopy --}}

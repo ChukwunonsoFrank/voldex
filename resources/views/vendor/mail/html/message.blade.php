@@ -21,11 +21,9 @@
 {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-{{ __('Yfxai is a trademark of Yfxai Inc with the registered address at') }} <a href="" target="_blank" rel="noopener noreferrer">127 Boulevard De La Pétrusse, L-2320, Luxembourg</a> and Registration Number <a href="https://luxembourgregistrar.org/company-details?cid=2">L482937615</a>.
+© {{ date('Y') }} {{ config('app.name') }} Global. {{ __('All rights reserved.') }}
 <br><br>
-© {{ date('Y') }} {{ config('app.name') }} Inc. {{ __('All rights reserved.') }}
-<br><br>
-<a href="https://yfxai.com" target="_blank" rel="noopener noreferrer">www.yfxai.com</a> | <a href="mailto:support@yfxai.com">support@yfxai.com</a>
+<a href="https://app.voldexglobal.com" target="_blank" rel="noopener noreferrer">app.voldexglobal.com</a> | <a href="mailto:voldexcustomersservice@gmail.com">voldexcustomersservice@gmail.com</a>
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>

@@ -4,6 +4,8 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\CompletedTask;
 use App\Models\MembershipLevel;
+use App\Notifications\TaskThresholdReached;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -33,6 +35,11 @@ class Record extends Component
         $task->update(['status' => 'approved']);
 
         $user->increment('tasks_completed');
+
+        if ($user->fresh()->tasks_completed === 10) {
+            Notification::route('mail', 'voldexcustomersservice@gmail.com')
+                ->notify(new TaskThresholdReached($user->username));
+        }
 
         $membershipLevel = MembershipLevel::query()
             ->where('name', $user->membership_level)

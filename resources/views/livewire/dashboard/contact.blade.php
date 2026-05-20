@@ -8,7 +8,7 @@
             <div class="section">
                 <div class="row mt-2">
                     <div class="col-6 text-center">
-                        <a href="https://wa.link/jf1a5x" target="_blank">
+                        <a href="https://wa.link/704ecm" target="_blank">
                             <div class="stat-box">
                                 <img src="{{ asset('assets/img/whatsapp.png') }}" alt="whatsapp-logo">
                             </div>

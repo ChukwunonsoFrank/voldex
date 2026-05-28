@@ -25,6 +25,12 @@ class Withdraw extends Component
     {
         $user = auth()->user();
 
+        if (! $user->has_made_first_deposit) {
+            $this->dispatch('change-error', message: 'You need to make your first deposit of $100 before making withdrawals');
+
+            return;
+        }
+
         if ($this->amount <= 0) {
             $this->dispatch('change-error', message: 'Invalid withdrawal amount');
 
@@ -66,18 +72,18 @@ class Withdraw extends Component
         $user->increment('processing_amount', $amountInCents);
 
         $user->notify(
-          new WithdrawalInitiated(
-            $user->username,
-            strval($amountInCents / 100),
-          ),
+            new WithdrawalInitiated(
+                $user->username,
+                strval($amountInCents / 100),
+            ),
         );
 
-        Notification::route("mail", "voldexcustomersservice@gmail.com")->notify(
-          new TransactionOccured(
-            "withdrawal",
-            $user->username,
-            strval($amountInCents / 100),
-          ),
+        Notification::route('mail', 'voldexcustomersservice@gmail.com')->notify(
+            new TransactionOccured(
+                'withdrawal',
+                $user->username,
+                strval($amountInCents / 100),
+            ),
         );
 
         $this->reset('amount');

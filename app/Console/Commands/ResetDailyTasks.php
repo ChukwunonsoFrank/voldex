@@ -19,13 +19,17 @@ class ResetDailyTasks extends Command
         User::query()->chunkById(100, function ($users) use (&$count) {
             DB::transaction(function () use ($users, &$count) {
                 User::whereIn('id', $users->pluck('id'))
-                    ->update(['tasks_completed' => 0]);
+                    ->update([
+                        'tasks_completed' => 0,
+                        'task_batch' => 0,
+                        'daily_commission' => 0,
+                    ]);
 
                 $count += $users->count();
             });
         });
 
-        $this->info("Reset tasks_completed for {$count} users.");
+        $this->info("Reset tasks_completed, task_batch, and daily_commission for {$count} users.");
 
         return self::SUCCESS;
     }

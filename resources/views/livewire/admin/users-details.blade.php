@@ -405,6 +405,39 @@
                     <nav
                         class="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-1.5">
                         <span
+                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white">
+                            Load Training Balance
+                        </span>
+                    </nav>
+                </div>
+                <div class="rounded-b-xl border border-t-0 border-gray-200 p-6 pt-4 dark:border-gray-800">
+                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="space-y-6 border-t border-gray-100 p-5 dark:border-gray-800 sm:p-6">
+                            <form wire:submit.prevent="addTrainingBalance()">
+                                <div class="-mx-2.5 flex flex-wrap gap-y-5">
+                                    <div class="w-full px-2.5">
+                                        <input wire:model="trainingBalanceAmount" type="text" placeholder="Amount"
+                                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10" />
+                                    </div>
+
+                                    <div class="w-full px-2.5">
+                                        <button type="submit" wire:loading.attr="disabled"
+                                            class="w-full rounded-lg bg-brand-500 p-3 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:pointer-events-none disabled:opacity-50">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="rounded-t-xl border border-gray-200 p-3 dark:border-gray-800">
+                    <nav
+                        class="flex overflow-x-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-track]:bg-white dark:[&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:h-1.5">
+                        <span
                             class="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium bg-white text-gray-900 shadow-theme-xs dark:bg-white/[0.03] dark:text-white">
                             Update Balances
                         </span>

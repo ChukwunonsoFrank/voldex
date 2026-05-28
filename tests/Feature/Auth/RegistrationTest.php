@@ -28,7 +28,7 @@ test('new users can register', function () {
         ->set('gRecaptchaResponse', 'fake-token')
         ->call('register');
 
-    $response->assertRedirect(route('dashboard.robot', absolute: false));
+    $response->assertRedirect(route('dashboard', absolute: false));
 
     $this->assertAuthenticated();
 });

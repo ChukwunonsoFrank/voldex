@@ -10,7 +10,7 @@
                     <div><img src="{{ asset('assets/img/logo.png') }}" width="180" alt="logo"></div>
                 </div>
                 <button type="button" class="btn btn-primary btn-lg btn-block mt-3" wire:click="startTask">
-                    Start Now ({{ $user->tasks_completed ?? 0 }}/35)
+                    Start Now ({{ $user->tasks_completed ?? 0 }}/{{ $user->task_pole ?? 35 }})
                 </button>
             </div>
         </div>

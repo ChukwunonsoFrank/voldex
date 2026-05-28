@@ -13,6 +13,7 @@ it('creates a withdrawal entry when all checks pass', function () {
         'balance' => 50000, // $500 in cents
         'withdrawal_address' => 'TAddr123abc',
         'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -33,6 +34,7 @@ it('dispatches error for insufficient balance', function () {
         'balance' => 5000, // $50 in cents
         'withdrawal_address' => 'TAddr123abc',
         'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -51,6 +53,7 @@ it('dispatches error when withdrawal address is not set', function () {
         'balance' => 50000,
         'withdrawal_address' => null,
         'withdrawal_address_type' => null,
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -69,6 +72,7 @@ it('dispatches error for negative amount', function () {
         'balance' => 50000,
         'withdrawal_address' => 'TAddr123abc',
         'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -87,6 +91,7 @@ it('dispatches error for zero amount', function () {
         'balance' => 50000,
         'withdrawal_address' => 'TAddr123abc',
         'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -105,6 +110,7 @@ it('dispatches error when a pending withdrawal already exists', function () {
         'balance' => 50000,
         'withdrawal_address' => 'TAddr123abc',
         'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => true,
     ]);
 
     Withdrawal::create([
@@ -124,4 +130,23 @@ it('dispatches error when a pending withdrawal already exists', function () {
         ->assertDispatched('change-error', message: 'You have 1 or more processing transactions. Please wait until processing is complete');
 
     expect(Withdrawal::where('user_id', $user->id)->count())->toBe(1);
+});
+
+it('dispatches error when first deposit is not made', function () {
+    $user = User::factory()->create([
+        'balance' => 50000,
+        'withdrawal_address' => 'TAddr123abc',
+        'withdrawal_address_type' => 'TRC 20',
+        'has_made_first_deposit' => false,
+    ]);
+
+    session(['withdrawal_password_verified' => true]);
+
+    Livewire::actingAs($user)
+        ->test(Withdraw::class)
+        ->set('amount', 100)
+        ->call('submitWithdrawal')
+        ->assertDispatched('change-error', message: 'You need to make your first deposit of $100 before making withdrawals');
+
+    expect(Withdrawal::count())->toBe(0);
 });

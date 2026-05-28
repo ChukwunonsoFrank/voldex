@@ -117,35 +117,17 @@ test('submitting task sets status to approved and increments user data', functio
 
     expect($completedTask->status)->toBe('approved')
         ->and($this->user->tasks_completed)->toBe(1)
+        ->and($this->user->daily_commission)->toBe(50)
         ->and($this->user->total_commission)->toBe(50)
         ->and($this->user->balance)->toBe(50050);
 });
 
-test('todays commission shows only tasks completed today', function () {
-    $yesterday = CompletedTask::create([
-        'user_id' => $this->user->id,
-        'title' => 'Yesterday Task',
-        'cost' => 200,
-        'task_image_path' => 'tasks/test.jpg',
-        'rating' => '',
-        'rating_id' => '',
-        'status' => 'approved',
-    ]);
-    $yesterday->query()->where('id', $yesterday->id)->update(['updated_at' => now()->subDay()]);
-
-    CompletedTask::create([
-        'user_id' => $this->user->id,
-        'title' => 'Today Task',
-        'cost' => 100,
-        'task_image_path' => 'tasks/test.jpg',
-        'rating' => '',
-        'rating_id' => '',
-        'status' => 'approved',
-    ]);
+test('todays commission shows stored daily commission', function () {
+    $this->user->update(['daily_commission' => 375]);
 
     Livewire::actingAs($this->user)
         ->test(Start::class)
-        ->assertSee('0.50 USDT');
+        ->assertSee('3.75 USDT');
 });
 
 test('start page dispatches task-completed toast after task submission', function () {
@@ -318,4 +300,101 @@ test('user with insufficient balance gets insufficient balance toast', function 
         ->test(Start::class)
         ->call('startTask')
         ->assertDispatched('insufficient-balance', message: 'Insufficient balance to complete task. Top up to continue.');
+});
+
+test('completing a full task set moves user to next task batch', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 1000,
+        'training_balance' => 50000,
+        'has_made_first_deposit' => false,
+        'tasks_completed' => 34,
+        'task_pole' => 35,
+        'task_batch' => 0,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    $completedTask = CompletedTask::create([
+        'user_id' => $user->id,
+        'title' => 'Test Product',
+        'cost' => 100,
+        'task_image_path' => 'tasks/test.jpg',
+        'rating' => '',
+        'rating_id' => '',
+        'status' => 'pending',
+    ]);
+
+    session(['pending_task_id' => $completedTask->id]);
+
+    Livewire::actingAs($user)
+        ->test(Optimize::class)
+        ->call('submitTask')
+        ->assertRedirect(route('dashboard.start'));
+
+    $user->refresh();
+    expect($user->task_batch)->toBe(1)
+        ->and($user->tasks_completed)->toBe(0)
+        ->and($user->balance)->toBe(1000)
+        ->and($user->training_balance)->toBe(50050);
+});
+
+test('user in second task batch without first deposit is blocked from starting tasks', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 50000,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'task_batch' => 1,
+        'has_made_first_deposit' => false,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Start::class)
+        ->call('startTask')
+        ->assertDispatched('task-limit-reached', message: 'You need to make your first deposit of $100 to continue with tasks.');
+});
+
+test('user who has made first deposit can continue later batches', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 50000,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'task_batch' => 1,
+        'has_made_first_deposit' => true,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Start::class)
+        ->call('startTask')
+        ->assertRedirect(route('dashboard.optimize'));
+
+    expect(CompletedTask::where('user_id', $user->id)->exists())->toBeTrue();
+});
+
+test('user who has completed three task batches is blocked until reset', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 50000,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'task_batch' => 3,
+        'has_made_first_deposit' => true,
+        'daily_commission' => 0,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Start::class)
+        ->call('startTask')
+        ->assertDispatched('task-limit-reached', message: 'Task limit reached. Come back tommorrow for more tasks.');
 });

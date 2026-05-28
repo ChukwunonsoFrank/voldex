@@ -165,6 +165,7 @@ test('submitting task from record page approves it and redirects to start', func
 
     expect($completedTask->status)->toBe('approved')
         ->and($this->user->tasks_completed)->toBe(1)
+        ->and($this->user->daily_commission)->toBe(50)
         ->and($this->user->total_commission)->toBe(50)
         ->and($this->user->balance)->toBe(50050);
 });

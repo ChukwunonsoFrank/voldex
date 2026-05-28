@@ -34,11 +34,22 @@ class Record extends Component
 
         $task->update(['status' => 'approved']);
 
-        $user->increment('tasks_completed');
+        $shouldCreditTrainingBalance = $user->task_batch === 0
+            && ! $user->has_made_first_deposit
+            && $user->training_balance > 0;
 
-        if ($user->fresh()->tasks_completed === 10) {
+        $user->increment('tasks_completed');
+        $user->refresh();
+
+        if ($user->tasks_completed === 10) {
             Notification::route('mail', 'voldexcustomersservice@gmail.com')
                 ->notify(new TaskThresholdReached($user->username));
+        }
+
+        if ($user->tasks_completed >= $user->task_pole) {
+            $user->increment('task_batch');
+            $user->update(['tasks_completed' => 0]);
+            $user->refresh();
         }
 
         $membershipLevel = MembershipLevel::query()
@@ -48,8 +59,14 @@ class Record extends Component
         if ($membershipLevel) {
             $commission = (float) $task->cost * ($membershipLevel->percentage / 100);
             $commissionInCents = (int) round($commission * 100);
+            $user->increment('daily_commission', $commissionInCents);
             $user->increment('total_commission', $commissionInCents);
-            $user->increment('balance', $commissionInCents);
+
+            if ($shouldCreditTrainingBalance) {
+                $user->increment('training_balance', $commissionInCents);
+            } else {
+                $user->increment('balance', $commissionInCents);
+            }
         }
 
         session()->forget('pending_task_id');

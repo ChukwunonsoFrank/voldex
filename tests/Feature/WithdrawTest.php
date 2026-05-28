@@ -13,6 +13,7 @@ test('successful withdrawal increments user processing_amount by the amount in c
         'processing_amount' => 0,
         'withdrawal_address' => 'TXyzAddressForTesting',
         'withdrawal_address_type' => 'TRC20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);
@@ -32,6 +33,7 @@ test('failed withdrawal does not change processing_amount', function () {
         'processing_amount' => 250_00,
         'withdrawal_address' => 'TXyzAddressForTesting',
         'withdrawal_address_type' => 'TRC20',
+        'has_made_first_deposit' => true,
     ]);
 
     session(['withdrawal_password_verified' => true]);

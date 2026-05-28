@@ -38,6 +38,8 @@ class UsersDetails extends Component
 
     public $processingAmount;
 
+    public $trainingBalance;
+
     public $taskPole;
 
     public $newTaskPole;
@@ -45,6 +47,8 @@ class UsersDetails extends Component
     public $taskPoleAmount;
 
     public $bonusAmount;
+
+    public $trainingBalanceAmount;
 
     public $title;
 
@@ -116,10 +120,20 @@ class UsersDetails extends Component
                     throw new \Exception('User not found');
                 }
 
-                $bonusAmountInCents = $this->bonusAmount * 100;
+                $bonusAmountInCents = (int) round(((float) $this->bonusAmount) * 100);
+                $startingBalance = (int) $user->balance;
 
                 // Update balance atomically
                 $user->balance += $bonusAmountInCents;
+
+                if (
+                    ! $user->has_made_first_deposit
+                    && $startingBalance === 1000
+                    && $bonusAmountInCents >= 10000
+                ) {
+                    $user->has_made_first_deposit = true;
+                }
+
                 $user->save();
             });
 
@@ -127,6 +141,34 @@ class UsersDetails extends Component
 
             // Reset form
             $this->reset(['bonusAmount']);
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: $e->getMessage(), type: 'error');
+        }
+    }
+
+    public function addTrainingBalance()
+    {
+        try {
+            if (! isset($this->trainingBalanceAmount) || $this->trainingBalanceAmount <= 0) {
+                throw new \Exception('Invalid amount');
+            }
+
+            DB::transaction(function () {
+                $user = User::where('id', '=', $this->id, 'and')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $user) {
+                    throw new \Exception('User not found');
+                }
+
+                $trainingBalanceAmountInCents = (int) round(((float) $this->trainingBalanceAmount) * 100);
+                $user->training_balance += $trainingBalanceAmountInCents;
+                $user->save();
+            });
+
+            $this->dispatch('notify', message: 'Training balance loaded successfully', type: 'success');
+            $this->reset(['trainingBalanceAmount']);
         } catch (\Exception $e) {
             $this->dispatch('notify', message: $e->getMessage(), type: 'error');
         }
@@ -189,6 +231,22 @@ class UsersDetails extends Component
 
     public function requestDeposit()
     {
+        $user = User::where('id', $this->id)->first();
+
+        if (
+            $user
+            && $user->task_batch === 0
+            && ! $user->has_made_first_deposit
+        ) {
+            $this->dispatch(
+                'notify',
+                message: 'User must complete the first task batch and make the first deposit before requesting a deposit.',
+                type: 'error',
+            );
+
+            return;
+        }
+
         $this->validate([
             'newTaskPole' => ['required'],
             'taskPoleAmount' => ['required', 'numeric', 'min:0.01'],
@@ -354,6 +412,7 @@ class UsersDetails extends Component
         $this->totalCommission = $user->total_commission;
         $this->dailyCommission = $user->daily_commission;
         $this->processingAmount = $user->processing_amount;
+        $this->trainingBalance = $user->training_balance;
         $this->taskPole = $user->task_pole;
 
         $withdrawals = Withdrawal::with('user')

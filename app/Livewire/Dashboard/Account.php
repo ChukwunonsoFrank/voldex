@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Dashboard;
 
-use App\Models\CompletedTask;
 use App\Models\MembershipLevel;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -14,18 +13,7 @@ class Account extends Component
     {
         $user = auth()->user();
 
-        $membershipLevel = MembershipLevel::query()
-            ->where('name', $user->membership_level)
-            ->first();
-
-        $percentage = $membershipLevel ? $membershipLevel->percentage / 100 : 0;
-
-        $todaysCommission = CompletedTask::query()
-            ->where('user_id', $user->id)
-            ->where('status', 'approved')
-            ->whereDate('updated_at', today())
-            ->get()
-            ->sum(fn (CompletedTask $task) => (float) $task->cost * $percentage);
+        $todaysCommission = ((int) ($user->daily_commission ?? 0)) / 100;
 
         return view('livewire.dashboard.account', [
             'membershipLevels' => MembershipLevel::all(),

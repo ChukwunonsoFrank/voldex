@@ -47,3 +47,19 @@ test('account page shows balance when not on hold', function () {
         ->test(Account::class)
         ->assertSee('500.00');
 });
+
+test('account page shows stored daily commission in usd', function () {
+    $user = User::factory()->create([
+        'membership_level' => 'VIP0',
+        'balance' => 50000,
+        'tasks_completed' => 0,
+        'task_pole' => 35,
+        'daily_commission' => 375,
+        'total_commission' => 0,
+        'processing_amount' => 0,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Account::class)
+        ->assertSee('3.75');
+});

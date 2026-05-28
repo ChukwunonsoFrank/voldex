@@ -450,7 +450,7 @@
                                 <div class="-mx-2.5 flex flex-wrap gap-y-5">
                                     <div class="w-full px-2.5">
                                         <label
-                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Daily
+                                            class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Today's
                                             Commission (USD)</label>
                                         <input wire:model="newDailyCommission" type="text"
                                             placeholder="Today's Commission"

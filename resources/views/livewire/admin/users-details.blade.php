@@ -89,7 +89,7 @@
 
                     <div class="flex items-end justify-between">
                         <div>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Daily Commissions</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Today's Commission</span>
                             <h5 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">
                                 @money($this->dailyCommission / 100)
                             </h5>
@@ -453,7 +453,7 @@
                                             class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Daily
                                             Commission (USD)</label>
                                         <input wire:model="newDailyCommission" type="text"
-                                            placeholder="Daily Commission"
+                                            placeholder="Today's Commission"
                                             class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
                                             @error('newDailyCommission') style="border-color: #ef4444;" @enderror />
                                         @error('newDailyCommission')

@@ -9,7 +9,10 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
 
-    $response->assertStatus(200);
+    $response
+        ->assertStatus(200)
+        ->assertSee(route('password.request', absolute: false))
+        ->assertDontSee('href="'.route('password.request').'" class="text-muted"', false);
 });
 
 test('users can authenticate using the login screen', function () {

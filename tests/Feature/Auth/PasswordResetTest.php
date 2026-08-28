@@ -12,13 +12,17 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 test('reset password link screen can be rendered', function () {
     $response = $this->get('/forgot-password');
 
-    $response->assertStatus(200);
+    $response
+        ->assertStatus(200)
+        ->assertSee('class="card"', false)
+        ->assertSee(asset('assets/img/logo.png'))
+        ->assertSee('Email Password Reset Link');
 });
 
 test('reset password link can be requested', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['email' => 'user@example.com']);
 
     Livewire::test(ForgotPassword::class)
         ->set('email', $user->email)
@@ -30,7 +34,7 @@ test('reset password link can be requested', function () {
 test('reset password screen can be rendered', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['email' => 'user@example.com']);
 
     Livewire::test(ForgotPassword::class)
         ->set('email', $user->email)
@@ -39,7 +43,11 @@ test('reset password screen can be rendered', function () {
     Notification::assertSentTo($user, ResetPasswordNotification::class, function ($notification) {
         $response = $this->get('/reset-password/'.$notification->token);
 
-        $response->assertStatus(200);
+        $response
+            ->assertStatus(200)
+            ->assertSee('class="card"', false)
+            ->assertSee(asset('assets/img/logo.png'))
+            ->assertSee('Reset password');
 
         return true;
     });
@@ -48,7 +56,7 @@ test('reset password screen can be rendered', function () {
 test('password can be reset with valid token', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['email' => 'user@example.com']);
 
     Livewire::test(ForgotPassword::class)
         ->set('email', $user->email)

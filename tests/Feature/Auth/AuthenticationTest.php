@@ -2,6 +2,8 @@
 
 use App\Livewire\Auth\Login;
 use App\Models\User;
+use App\Notifications\UserLoggedIn;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -16,6 +18,8 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
+    Notification::fake();
+
     $user = User::factory()->create();
 
     $response = Livewire::test(Login::class)
@@ -27,6 +31,14 @@ test('users can authenticate using the login screen', function () {
         ->assertHasNoErrors();
 
     $this->assertAuthenticated();
+
+    Notification::assertSentOnDemand(
+        UserLoggedIn::class,
+        function (UserLoggedIn $notification, array $channels, object $notifiable) use ($user) {
+            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+                && $notification->username === $user->username;
+        },
+    );
 });
 
 test('users can not authenticate with invalid password', function () {

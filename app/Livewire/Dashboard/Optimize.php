@@ -40,7 +40,7 @@ class Optimize extends Component
         $user->refresh();
 
         if ($user->tasks_completed === 10) {
-            Notification::route('mail', 'voldexcustomersservice@gmail.com')
+            Notification::route('mail', config('mail.support_address'))
                 ->notify(new TaskThresholdReached($user->username));
         }
 

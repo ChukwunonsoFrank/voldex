@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Auth\Register;
+use App\Notifications\UserRegistered;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -12,6 +14,8 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    Notification::fake();
+
     Http::fake([
         'https://www.google.com/recaptcha/api/siteverify*' => Http::response(['success' => true]),
     ]);
@@ -31,4 +35,12 @@ test('new users can register', function () {
     $response->assertRedirect(route('dashboard', absolute: false));
 
     $this->assertAuthenticated();
+
+    Notification::assertSentOnDemand(
+        UserRegistered::class,
+        function (UserRegistered $notification, array $channels, object $notifiable) {
+            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+                && $notification->emailAddress === 'testuser';
+        },
+    );
 });

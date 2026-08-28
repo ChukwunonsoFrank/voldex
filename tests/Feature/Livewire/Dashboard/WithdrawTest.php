@@ -3,12 +3,16 @@
 use App\Livewire\Dashboard\Withdraw;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Notifications\TransactionOccured;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
 it('creates a withdrawal entry when all checks pass', function () {
+    Notification::fake();
+
     $user = User::factory()->create([
         'balance' => 50000, // $500 in cents
         'withdrawal_address' => 'TAddr123abc',
@@ -27,6 +31,15 @@ it('creates a withdrawal entry when all checks pass', function () {
     $withdrawal = Withdrawal::where('user_id', $user->id)->where('status', 'pending')->first();
     expect($withdrawal)->not->toBeNull();
     expect($withdrawal->amount)->toBe(10000); // stored in cents
+
+    Notification::assertSentOnDemand(
+        TransactionOccured::class,
+        function (TransactionOccured $notification, array $channels, object $notifiable) use ($user) {
+            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+                && $notification->type === 'withdrawal'
+                && $notification->username === $user->username;
+        },
+    );
 });
 
 it('dispatches error for insufficient balance', function () {

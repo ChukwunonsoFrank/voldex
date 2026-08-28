@@ -78,7 +78,7 @@ class Withdraw extends Component
             ),
         );
 
-        Notification::route('mail', 'voldexcustomersservice@gmail.com')->notify(
+        Notification::route('mail', config('mail.support_address'))->notify(
             new TransactionOccured(
                 'withdrawal',
                 $user->username,

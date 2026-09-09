@@ -21,7 +21,7 @@ class BindWallet extends Component
     {
         try {
             $this->validate([
-                'network' => ['required', 'in:ERC 20,TRC 20'],
+                'network' => ['required', 'in:Bitcoin,ERC 20,TRC 20'],
                 'wallet_address' => ['required', 'string'],
                 'withdrawal_password' => ['required', 'string'],
             ]);
@@ -51,7 +51,7 @@ class BindWallet extends Component
         }
 
         $this->reset('withdrawal_password');
-        $this->dispatch('bind-wallet', message: 'Wallet updated successfully.')->self();
+        $this->dispatch('bind-wallet', message: 'Wallet bound successfully.')->self();
     }
 
     public function render()

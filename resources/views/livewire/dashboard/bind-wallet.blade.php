@@ -10,6 +10,7 @@
                             <div class="input-wrapper">
                                 <label class="label" for="select4b">Network</label>
                                 <select wire:model="network" class="form-control custom-select" id="select4b">
+                                    <option value="Bitcoin">Bitcoin</option>
                                     <option value="ERC 20">ERC 20</option>
                                     <option value="TRC 20">TRC 20</option>
                                 </select>

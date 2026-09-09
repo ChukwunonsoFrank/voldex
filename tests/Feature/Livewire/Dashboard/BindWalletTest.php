@@ -26,6 +26,25 @@ it('binds wallet when withdrawal password is correct', function () {
     expect($user->withdrawal_address_type)->toBe('TRC 20');
 });
 
+it('binds a Bitcoin wallet when withdrawal password is correct', function () {
+    $user = User::factory()->create([
+        'withdrawal_password' => Hash::make('secret123'),
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(BindWallet::class)
+        ->assertSee('Bitcoin')
+        ->set('network', 'Bitcoin')
+        ->set('wallet_address', 'bc1qexamplewalletaddress')
+        ->set('withdrawal_password', 'secret123')
+        ->call('bind')
+        ->assertDispatched('bind-wallet', message: 'Wallet bound successfully.');
+
+    $user->refresh();
+    expect($user->withdrawal_address)->toBe('bc1qexamplewalletaddress');
+    expect($user->withdrawal_address_type)->toBe('Bitcoin');
+});
+
 it('dispatches bind-error when withdrawal password is incorrect', function () {
     $user = User::factory()->create([
         'withdrawal_password' => Hash::make('secret123'),

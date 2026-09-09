@@ -11,7 +11,7 @@ use Livewire\Component;
 #[Layout('components.layouts.app')]
 class BindWallet extends Component
 {
-    public string $network = 'ERC 20';
+    public string $network = 'Bitcoin';
 
     public string $wallet_address = '';
 

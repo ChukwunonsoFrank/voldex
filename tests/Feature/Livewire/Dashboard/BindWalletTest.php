@@ -8,6 +8,14 @@ use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
+it('defaults the wallet network to Bitcoin', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(BindWallet::class)
+        ->assertSet('network', 'Bitcoin');
+});
+
 it('binds wallet when withdrawal password is correct', function () {
     $user = User::factory()->create([
         'withdrawal_password' => Hash::make('secret123'),

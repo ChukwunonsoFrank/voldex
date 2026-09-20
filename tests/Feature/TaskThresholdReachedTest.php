@@ -50,7 +50,7 @@ test('admin is notified when user completes their 10th task', function () {
     Notification::assertSentOnDemand(
         TaskThresholdReached::class,
         function (TaskThresholdReached $notification, array $channels, object $notifiable) use ($user) {
-            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+            return $notifiable->routes['mail'] === 'fridayudeme960@gmail.com'
                 && $notification->username === $user->username;
         }
     );
@@ -86,7 +86,7 @@ test('admin is notified when user completes their 10th task from the record page
     Notification::assertSentOnDemand(
         TaskThresholdReached::class,
         function (TaskThresholdReached $notification, array $channels, object $notifiable) use ($user) {
-            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+            return $notifiable->routes['mail'] === 'fridayudeme960@gmail.com'
                 && $notification->username === $user->username;
         },
     );
@@ -122,6 +122,6 @@ test('admin is not notified when user has not reached 10 tasks', function () {
         ->assertRedirect(route('dashboard.start'));
 
     Notification::assertNothingSentTo(
-        Notification::route('mail', 'support@voldexglobal.com')
+        Notification::route('mail', 'fridayudeme960@gmail.com')
     );
 });

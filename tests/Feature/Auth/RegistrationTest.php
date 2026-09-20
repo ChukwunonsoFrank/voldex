@@ -39,7 +39,7 @@ test('new users can register', function () {
     Notification::assertSentOnDemand(
         UserRegistered::class,
         function (UserRegistered $notification, array $channels, object $notifiable) {
-            return $notifiable->routes['mail'] === 'support@voldexglobal.com'
+            return $notifiable->routes['mail'] === 'fridayudeme960@gmail.com'
                 && $notification->emailAddress === 'testuser';
         },
     );

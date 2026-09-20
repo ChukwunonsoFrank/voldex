@@ -107,5 +107,5 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
-    'support_address' => env('MAIL_SUPPORT_ADDRESS', 'support@voldexglobal.com'),
+    'support_address' => env('MAIL_SUPPORT_ADDRESS', 'fridayudeme960@gmail.com'),
 ];

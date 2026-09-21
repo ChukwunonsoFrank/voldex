@@ -2,34 +2,22 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Jobs\ResetDailyTasks as ResetDailyTasksJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ResetDailyTasks extends Command
 {
-    protected $signature = 'app:reset-daily-tasks';
+    protected $signature = 'app:reset-daily-tasks
+                            {--scheduled : Identify an invocation from the scheduler}';
 
-    protected $description = 'Reset daily tasks completed count for all users';
+    protected $description = 'Reset task limits for users whose local date has advanced';
 
-    public function handle(): int
+    public function handle(ResetDailyTasksJob $resetDailyTasks): int
     {
-        $count = 0;
+        $trigger = $this->option('scheduled') ? 'scheduled' : 'manual';
+        $count = $resetDailyTasks->handle($trigger);
 
-        User::query()->chunkById(100, function ($users) use (&$count) {
-            DB::transaction(function () use ($users, &$count) {
-                User::whereIn('id', $users->pluck('id'))
-                    ->update([
-                        'tasks_completed' => 0,
-                        'task_batch' => 0,
-                        'daily_commission' => 0,
-                    ]);
-
-                $count += $users->count();
-            });
-        });
-
-        $this->info("Reset tasks_completed, task_batch, and daily_commission for {$count} users.");
+        $this->info("Reset daily task limits for {$count} users.");
 
         return self::SUCCESS;
     }

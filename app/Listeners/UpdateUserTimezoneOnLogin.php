@@ -8,25 +8,27 @@ use Illuminate\Support\Facades\Request;
 
 class UpdateUserTimezoneOnLogin
 {
-  /**
-   * Handle the event.
-   */
-  public function handle(Login $event): void
-  {
-    // Only update timezone for User model instances
-    if (! ($event->user instanceof User)) {
-      return;
-    }
+    /**
+     * Handle the event.
+     */
+    public function handle(Login $event): void
+    {
+        if (! ($event->user instanceof User)) {
+            return;
+        }
 
-    // Try to get timezone from request, session, or use default
-    $timezone = Request::input('timezone')
-      ?? session('timezone')
-      ?? Request::header('X-Timezone')
-      ?? 'UTC';
+        $timezone = Request::input('timezone')
+            ?? session('timezone')
+            ?? Request::header('X-Timezone');
 
-    // Update user's timezone if it's different
-    if ($event->user->timezone !== $timezone) {
-      $event->user->update(['timezone' => $timezone]);
+        if (
+            ! is_string($timezone)
+            || ! in_array($timezone, timezone_identifiers_list(), true)
+            || $event->user->timezone === $timezone
+        ) {
+            return;
+        }
+
+        $event->user->update(['timezone' => $timezone]);
     }
-  }
 }

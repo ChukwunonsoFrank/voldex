@@ -20,7 +20,9 @@ test('login screen can be rendered', function () {
 test('users can authenticate using the login screen', function () {
     Notification::fake();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'timezone' => 'Africa/Lagos',
+    ]);
 
     $response = Livewire::test(Login::class)
         ->set('username', $user->username)
@@ -31,6 +33,7 @@ test('users can authenticate using the login screen', function () {
         ->assertHasNoErrors();
 
     $this->assertAuthenticated();
+    expect($user->fresh()->timezone)->toBe('Africa/Lagos');
 
     Notification::assertSentOnDemand(
         UserLoggedIn::class,
@@ -39,6 +42,23 @@ test('users can authenticate using the login screen', function () {
                 && $notification->username === $user->username;
         },
     );
+});
+
+test('login updates the users timezone when the browser supplies a valid timezone', function () {
+    Notification::fake();
+
+    $user = User::factory()->create([
+        'timezone' => 'UTC',
+    ]);
+
+    Livewire::test(Login::class)
+        ->set('username', $user->username)
+        ->set('password', 'password')
+        ->set('timezone', 'Africa/Lagos')
+        ->call('login')
+        ->assertHasNoErrors();
+
+    expect($user->fresh()->timezone)->toBe('Africa/Lagos');
 });
 
 test('users can not authenticate with invalid password', function () {

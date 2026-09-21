@@ -1,6 +1,7 @@
 <?php
 
-use App\Jobs\ResetDailyTasks;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::job(new ResetDailyTasks)->everyTenMinutes()->withoutOverlapping();
+Schedule::command('app:reset-daily-tasks --scheduled')
+    ->everyTenMinutes()
+    ->withoutOverlapping(20);

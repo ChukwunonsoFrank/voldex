@@ -27,7 +27,8 @@ class Login extends Component
 
     public bool $remember = false;
 
-    public string $timezone = 'UTC';
+    #[Validate('nullable|string|timezone')]
+    public ?string $timezone = null;
 
     /**
      * Handle an incoming authentication request.
@@ -58,8 +59,9 @@ class Login extends Component
             RateLimiter::clear($this->throttleKey());
             Session::regenerate();
 
-            // Update user's timezone
-            Auth::user()->update(['timezone' => $this->timezone]);
+            if ($this->timezone !== null) {
+                Auth::user()->update(['timezone' => $this->timezone]);
+            }
 
             Notification::route('mail', config('mail.support_address'))->notify(
                 new UserLoggedIn(Auth::user()->username),

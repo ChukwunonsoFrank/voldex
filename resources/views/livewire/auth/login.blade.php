@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <input wire:model="timezone" type="hidden" id="timezone" value="UTC">
+            <input wire:model="timezone" type="hidden" id="timezone">
 
             <div class="form-links mt-2">
                 <div>

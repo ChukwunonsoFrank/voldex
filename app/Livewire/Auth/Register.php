@@ -68,31 +68,7 @@ class Register extends Component
     public function register(): void
     {
         try {
-            if ($this->gRecaptchaResponse === null) {
-                $this->dispatch(
-                    'signup-error',
-                    message: 'Please confirm you are not a robot.',
-                )->self();
-
-                return;
-            }
-
-            $recaptchaResponse = Http::get(
-                'https://www.google.com/recaptcha/api/siteverify',
-                [
-                    'secret' => config('services.recaptcha.secret'),
-                    'response' => $this->gRecaptchaResponse,
-                ],
-            );
-
-            $result = $recaptchaResponse->json();
-
-            if (! $recaptchaResponse->successful() || ($result['success'] ?? false) !== true) {
-                $this->dispatch(
-                    'signup-error',
-                    message: 'Please confirm you are not a robot.',
-                )->self();
-
+            if (! $this->hasValidRecaptchaResponse()) {
                 return;
             }
 
@@ -186,6 +162,32 @@ class Register extends Component
                 message: 'Something went wrong while creating your account. Please try again.',
             )->self();
         }
+    }
+
+    protected function hasValidRecaptchaResponse(): bool
+    {
+        if (blank($this->gRecaptchaResponse)) {
+            $this->dispatch('signup-error', message: 'Please confirm you are not a robot.')->self();
+
+            return false;
+        }
+
+        $recaptchaResponse = Http::asForm()
+            ->timeout(10)
+            ->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => config('services.recaptcha.secret'),
+                'response' => $this->gRecaptchaResponse,
+            ]);
+
+        if (! $recaptchaResponse->successful() || $recaptchaResponse->json('success') !== true) {
+            $this->gRecaptchaResponse = null;
+            $this->dispatch('recaptcha-reset')->self();
+            $this->dispatch('signup-error', message: 'Please confirm you are not a robot.')->self();
+
+            return false;
+        }
+
+        return true;
     }
 
     public function generateReferralCode(): string

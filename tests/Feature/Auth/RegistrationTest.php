@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Auth\Register;
+use App\Models\User;
 use App\Notifications\UserRegistered;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
@@ -43,4 +45,19 @@ test('new users can register', function () {
                 && $notification->emailAddress === 'testuser';
         },
     );
+});
+
+test('users can not register when recaptcha verification fails', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => false]),
+    ]);
+
+    Livewire::test(Register::class)
+        ->set('gRecaptchaResponse', 'invalid-token')
+        ->call('register')
+        ->assertSet('gRecaptchaResponse', null)
+        ->assertDispatched('recaptcha-reset')
+        ->assertDispatched('signup-error', message: 'Please confirm you are not a robot.');
+
+    expect(User::query()->count())->toBe(0);
 });

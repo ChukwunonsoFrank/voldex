@@ -17,8 +17,21 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         function onRecaptchaSuccess(token) {
-            // When reCAPTCHA is successfully completed, send the token to Livewire
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('gRecaptchaResponse', token);
+            const widget = document.querySelector('[data-recaptcha-widget]');
+            const component = widget?.closest('[wire\\:id]');
+
+            if (component) {
+                Livewire.find(component.getAttribute('wire:id')).set('gRecaptchaResponse', token);
+            }
+        }
+
+        function onRecaptchaExpired() {
+            const widget = document.querySelector('[data-recaptcha-widget]');
+            const component = widget?.closest('[wire\\:id]');
+
+            if (component) {
+                Livewire.find(component.getAttribute('wire:id')).set('gRecaptchaResponse', null);
+            }
         }
     </script>
     @livewireStyles
@@ -49,6 +62,11 @@
     <script src="{{ asset('assets/js/base.js') }}"></script>
 
     @livewireScripts
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('recaptcha-reset', () => window.grecaptcha?.reset());
+        });
+    </script>
 </body>
 
 </html>

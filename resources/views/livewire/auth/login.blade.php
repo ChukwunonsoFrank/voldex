@@ -37,6 +37,10 @@
 
             <input wire:model="timezone" type="hidden" id="timezone">
 
+            <div wire:ignore class="g-recaptcha mt-2 mb-1 px-2" data-recaptcha-widget
+                data-sitekey="{{ config('services.recaptcha.key') }}" data-callback="onRecaptchaSuccess"
+                data-expired-callback="onRecaptchaExpired"></div>
+
             <div class="form-links mt-2">
                 <div>
                     @if (Route::has('register'))

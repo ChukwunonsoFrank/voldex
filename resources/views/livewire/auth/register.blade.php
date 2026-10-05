@@ -38,7 +38,7 @@
                             <div style="display: flex; gap: 8px; align-items: center;" x-data="{
                                 open: false,
                                 search: '',
-                                selectedIso: $wire.entangle('country_iso'),
+                                selectedIso: 'us',
                                 countries: [
                                     { code: '+93', iso: 'af', name: 'Afghanistan' },
                                     { code: '+355', iso: 'al', name: 'Albania' },
@@ -360,8 +360,9 @@
 
             <input wire:model="timezone" type="hidden" id="timezone" value="UTC">
 
-            <div wire:ignore class="g-recaptcha mt-2 mb-1 px-2" data-sitekey="{{ config('services.recaptcha.key') }}"
-                data-callback="onRecaptchaSuccess"></div>
+            <div wire:ignore class="g-recaptcha mt-2 mb-1 px-2" data-recaptcha-widget
+                data-sitekey="{{ config('services.recaptcha.key') }}" data-callback="onRecaptchaSuccess"
+                data-expired-callback="onRecaptchaExpired"></div>
 
             <div class="form-links mt-2 mb-5">
                 <div>

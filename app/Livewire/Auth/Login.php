@@ -41,11 +41,11 @@ class Login extends Component
         try {
             $this->validate();
 
+            $this->ensureIsNotRateLimited();
+
             if (! $this->hasValidRecaptchaResponse()) {
                 return;
             }
-
-            $this->ensureIsNotRateLimited();
 
             if (
                 ! Auth::attempt(
@@ -57,6 +57,8 @@ class Login extends Component
                 )
             ) {
                 RateLimiter::hit($this->throttleKey());
+
+                $this->resetRecaptchaChallenge();
 
                 throw ValidationException::withMessages([
                     'username' => __('auth.failed'),
@@ -91,6 +93,7 @@ class Login extends Component
     protected function hasValidRecaptchaResponse(): bool
     {
         if (blank($this->gRecaptchaResponse)) {
+            $this->resetRecaptchaChallenge();
             $this->dispatch('login-error', message: 'Please confirm you are not a robot.')->self();
 
             return false;
@@ -104,14 +107,25 @@ class Login extends Component
             ]);
 
         if (! $recaptchaResponse->successful() || $recaptchaResponse->json('success') !== true) {
-            $this->gRecaptchaResponse = null;
-            $this->dispatch('recaptcha-reset')->self();
+            $this->resetRecaptchaChallenge();
             $this->dispatch('login-error', message: 'Please confirm you are not a robot.')->self();
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Clear the one-time Google token and reset the widget, so the next
+     * attempt is presented with a fresh challenge instead of a stale token
+     * that Google will reject as already used. The event must be dispatched
+     * globally because the listener lives in the shared auth layout.
+     */
+    protected function resetRecaptchaChallenge(): void
+    {
+        $this->gRecaptchaResponse = null;
+        $this->dispatch('recaptcha-reset');
     }
 
     /**

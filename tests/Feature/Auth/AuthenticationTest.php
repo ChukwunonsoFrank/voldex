@@ -93,7 +93,55 @@ test('users can not authenticate without completing recaptcha', function () {
         ->set('username', $user->username)
         ->set('password', 'password')
         ->call('login')
+        ->assertDispatched('recaptcha-reset')
         ->assertDispatched('login-error', message: 'Please confirm you are not a robot.');
+
+    $this->assertGuest();
+});
+
+test('a failed login clears the used captcha token and resets the widget', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
+    ]);
+
+    $user = User::factory()->create();
+
+    Livewire::test(Login::class)
+        ->set('username', $user->username)
+        ->set('password', 'wrong-password')
+        ->set('gRecaptchaResponse', 'used-token')
+        ->call('login')
+        ->assertSet('gRecaptchaResponse', null)
+        ->assertDispatched('recaptcha-reset')
+        ->assertDispatched('login-error', message: 'These credentials do not match our records.');
+
+    $this->assertGuest();
+});
+
+test('rate limited login attempts are rejected without consuming the captcha token', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
+    ]);
+
+    $user = User::factory()->create();
+
+    $component = Livewire::test(Login::class);
+
+    foreach (range(1, 5) as $attempt) {
+        $component
+            ->set('username', $user->username)
+            ->set('password', 'wrong-password')
+            ->set('gRecaptchaResponse', "token-{$attempt}")
+            ->call('login');
+    }
+
+    $component
+        ->set('gRecaptchaResponse', 'unused-token')
+        ->call('login')
+        ->assertSet('gRecaptchaResponse', 'unused-token')
+        ->assertDispatched('login-error');
+
+    Http::assertSentCount(5);
 
     $this->assertGuest();
 });

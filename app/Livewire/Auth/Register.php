@@ -200,12 +200,13 @@ class Register extends Component
     /**
      * Clear the one-time Google token and reset the widget, so the next
      * attempt is presented with a fresh challenge instead of a stale token
-     * that Google will reject as already used.
+     * that Google will reject as already used. The event must be dispatched
+     * globally because the listener lives in the shared auth layout.
      */
     protected function resetRecaptchaChallenge(): void
     {
         $this->gRecaptchaResponse = null;
-        $this->dispatch('recaptcha-reset')->self();
+        $this->dispatch('recaptcha-reset');
     }
 
     public function generateReferralCode(): string

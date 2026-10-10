@@ -68,10 +68,6 @@ class Register extends Component
     public function register(): void
     {
         try {
-            if (! $this->hasValidRecaptchaResponse()) {
-                return;
-            }
-
             $validated = $this->validate([
                 'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
@@ -94,6 +90,10 @@ class Register extends Component
             if ($refCode && ! User::where('referral_code', $refCode)->exists()) {
                 $this->dispatch('signup-error', message: 'Invalid referral code.')->self();
 
+                return;
+            }
+
+            if (! $this->hasValidRecaptchaResponse()) {
                 return;
             }
 
@@ -153,9 +153,16 @@ class Register extends Component
                 navigate: false,
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch(
+                'signup-error',
+                message: $e->validator->errors()->first(),
+            )->self();
+
             throw $e;
         } catch (\Throwable $e) {
             Log::error('Registration failed', ['exception' => $e]);
+
+            $this->resetRecaptchaChallenge();
 
             $this->dispatch(
                 'signup-error',
@@ -167,6 +174,7 @@ class Register extends Component
     protected function hasValidRecaptchaResponse(): bool
     {
         if (blank($this->gRecaptchaResponse)) {
+            $this->resetRecaptchaChallenge();
             $this->dispatch('signup-error', message: 'Please confirm you are not a robot.')->self();
 
             return false;
@@ -180,14 +188,24 @@ class Register extends Component
             ]);
 
         if (! $recaptchaResponse->successful() || $recaptchaResponse->json('success') !== true) {
-            $this->gRecaptchaResponse = null;
-            $this->dispatch('recaptcha-reset')->self();
+            $this->resetRecaptchaChallenge();
             $this->dispatch('signup-error', message: 'Please confirm you are not a robot.')->self();
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Clear the one-time Google token and reset the widget, so the next
+     * attempt is presented with a fresh challenge instead of a stale token
+     * that Google will reject as already used.
+     */
+    protected function resetRecaptchaChallenge(): void
+    {
+        $this->gRecaptchaResponse = null;
+        $this->dispatch('recaptcha-reset')->self();
     }
 
     public function generateReferralCode(): string
